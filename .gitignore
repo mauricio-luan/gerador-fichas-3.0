@@ -1,6 +1,7 @@
 .env
-__pychache__
+__pycache__/
 build
 venv/
 *.json
 *.spec
+app.log

@@ -4,15 +4,9 @@ import os
 from dotenv import load_dotenv
 from gera_planilha import gerar_planilha_estilizada
 from encontra_imagem import encontrar_imagem
+from config_log import configurar_logger
 
-# Carrega as variáveis de ambiente do arquivo .env
-load_dotenv()
-
-API_URL = os.getenv("API_URL")
-API_TICKET_URL = os.getenv("API_TICKET_URL")
-API_TOKEN = os.getenv("API_TOKEN")
-
-headers = {"Authorization": f"Bearer {API_TOKEN}"}
+log = configurar_logger('gerador-fichas-3.0')
 
 print("""
 ██████╗  █████╗ ██╗   ██╗███████╗██████╗ 
@@ -24,37 +18,51 @@ print("""
 Gerador de Fichas de Implantação 2.0 · 2025 · Mauricio Luan
 """)
 
+# Carrega as variáveis de ambiente do arquivo .env
+load_dotenv()
+
+log.info('Carregando variaveis de ambiente...')
+try:
+    API_URL = os.getenv("API_URL")
+    API_TICKET_URL = os.getenv("API_TICKET_URL")
+    API_TOKEN = os.getenv("API_TOKEN")
+    log.info('Variaveis de ambiente carregadas.')
+    headers = {"Authorization": f"Bearer {API_TOKEN}"}
+
+except Exception as e:
+    log.exception(f"Erro ao carregar variáveis de ambiente: {e}")
+    log.error("Erro ao carregar as variáveis de ambiente. Verifique o arquivo .env.")
+
 
 def get_dados(headers):
     """
     aqui solicita o id do chamado, o numero de terminais e logo
     em seguida faz o get na API do Tomticket
     """
-
     ticket_id = input("Digite o ID do chamado: ")
     n_terminais = input("Digite o número de terminais: ")
-
-    response_chamado = requests.get(f"{API_TICKET_URL}{ticket_id}", headers=headers)
-    dados_chamado = response_chamado.json()
-    conta_empresa_loja = dados_chamado["data"]["customer"]["internal_id"]
-
-    response_cliente = requests.get(f"{API_URL}{conta_empresa_loja}", headers=headers)
-
+    
+    log.info('Chama primeira requisicao.')
     try:
-        if response_cliente.status_code == 200 and response_chamado.status_code == 200:
+        response_chamado = requests.get(f"{API_TICKET_URL}{ticket_id}", headers=headers, timeout=2)
+        
+        if response_chamado.status_code == 200:
+            log.info('Requisicao do chamado bem sucedida.')
+            dados_chamado = response_chamado.json()
+            conta_empresa_loja = dados_chamado["data"]["customer"]["internal_id"]
+            
+            log.info('Chama segunda requisicao.')
+            response_cliente = requests.get(f"{API_URL}{conta_empresa_loja}", headers=headers, timeout=2)
+            
             return response_chamado, response_cliente, n_terminais
         else:
-            print(
-                f"Retorno da requisição do cliente: {response_cliente.status_code} - {response_cliente.reason}"
-            )
-            print(
-                f"Retorno da requisição do chamado: {response_chamado.status_code} - {response_chamado.reason}"
-            )
-            return None, None, None
-    except Exception as e:
-        print(f"Erro ao obter dados: {e}")
-        return None, None, None
+            log.error(f"Retorno da requisição do chamado: {response_chamado.status_code} - {response_chamado.reason}")
 
+    except requests.exceptions.RequestException as e:
+        log.exception(f"Erro ao fazer a requisição do chamado: {e}")
+        log.info("Erro ao obter dados do chamado. Verifique o ID e tente novamente.")
+        return None, None, None
+    
 
 def organiza_os_dados(response_chamado, response_cliente, n_terminais):
     """
@@ -125,23 +133,28 @@ def organiza_os_dados(response_chamado, response_cliente, n_terminais):
         "Loja": dicionario["Loja"],
         "Token Payer": " / ".join(tokens),
     }
+    log.debug(f"Dados organizados: {planilha}")
 
     return planilha
 
 
 if __name__ == "__main__":
+    log.info('Aplicacao iniciada.')
     while True:
+        log.info('chama get_dados()')
         response_chamado, response_cliente, n_terminais = get_dados(headers)
         if not response_chamado or not response_cliente:
+            log.warning('Reiniciando programa devido a erro nas requisições.')
             continue
-
+        
+        log.info('chama organiza_os_dados()')
         planilha = organiza_os_dados(response_chamado, response_cliente, n_terminais)
 
         # salva tudão
         caminho_base = f"G:\\Drives compartilhados\\FICHAS DE IMPLANTACAO"
         if not os.path.exists(caminho_base):
             caminho_base = os.path.join(os.path.expanduser("~"), "Documents")
-            print(f"Pasta base não encontrada. Salvando em: {caminho_base}\n")
+            log.info(f"Caminho do google drive nao encontrado. Salvando em: {caminho_base}\n")
 
         primeira_letra = planilha["Razão Social"][0].upper()
         subpasta_letra = os.path.join(caminho_base, primeira_letra)
@@ -149,7 +162,11 @@ if __name__ == "__main__":
         pasta_razao_social = os.path.join(subpasta_letra, planilha["Razão Social"])
         os.makedirs(pasta_razao_social, exist_ok=True)
         arquivo_excel = os.path.join(pasta_razao_social, f"{planilha['Loja']}.xlsx")
+        
         caminho_imagem = encontrar_imagem("payer.png")
 
+        log.info('Chama gerar_planilha_estilizada()')
         gerar_planilha_estilizada(planilha, arquivo_excel, caminho_imagem)
+        
+        log.info("Abrindo pasta.")
         os.startfile(pasta_razao_social) 

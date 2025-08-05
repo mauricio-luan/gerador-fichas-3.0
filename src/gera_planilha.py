@@ -1,10 +1,14 @@
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from openpyxl.drawing.image import Image
+import logging
+
+logger = logging.getLogger('gerador-fichas-3.0.gera_planilha')
 
 
 def gerar_planilha_estilizada(dados, arquivo_excel, caminho_imagem):
     """ Gera a ficha de implantação com os dados do cliente """
+    logger.info('Iniciando criacao da planilha')
     
     wb = Workbook()
     ws = wb.active
@@ -79,4 +83,4 @@ def gerar_planilha_estilizada(dados, arquivo_excel, caminho_imagem):
         linha_atual += 1
 
     wb.save(arquivo_excel)
-    print(f"\nPlanilha salva em: {arquivo_excel}")
+    logger.info(f"salva em: {arquivo_excel}")
