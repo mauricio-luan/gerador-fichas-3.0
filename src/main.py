@@ -1,68 +1,85 @@
+# -*- coding: utf-8 -*-
+#
+# main.py, gera_planilha.py, encontra_imagem.py, config_log.py
+# Projeto: Gerador de Fichas de Implantação
+# Autor: Mauricio Luan
+# Data de criação: 29/01/2025
+# Descrição: Gera fichas de implantação para clientes, coletando dados de um chamado e formatando-os em uma planilha.
+#
+# Copyright (c) 2025 Payer Serviços de Pagamento LTDA. Todos os direitos reservados.
+
 import requests
 import datetime
 import os
 from dotenv import load_dotenv
 from gera_planilha import gerar_planilha_estilizada
 from encontra_imagem import encontrar_imagem
-from config_log import configurar_logger
+from config_log import configura_logger
 
-log = configurar_logger('gerador-fichas-3.0')
+log = configura_logger("gerador-fichas-3.0")
 
-print("""
-██████╗  █████╗ ██╗   ██╗███████╗██████╗ 
+print(
+    """
+██████╗  █████╗ ██╗   ██╗███████╗██████╗
 ██╔══██╗██╔══██╗╚██╗ ██╔╝██╔════╝██╔══██╗
 ██████╔╝███████║ ╚████╔╝ █████╗  ██████╔╝
 ██╔═══╝ ██╔══██║  ╚██╔╝  ██╔══╝  ██╔══██╗
 ██║     ██║  ██║   ██║   ███████╗██║  ██║
 ╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
-Gerador de Fichas de Implantação 2.0 · 2025 · Mauricio Luan
-""")
+Gerador de Fichas de Implantação · 2025 · Mauricio Luan
+"""
+)
 
-# Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
-log.info('Carregando variaveis de ambiente...')
+log.debug("Carregando variaveis de ambiente...")
 try:
     API_URL = os.getenv("API_URL")
     API_TICKET_URL = os.getenv("API_TICKET_URL")
     API_TOKEN = os.getenv("API_TOKEN")
-    log.info('Variaveis de ambiente carregadas.')
+    log.debug("Variaveis de ambiente carregadas.")
     headers = {"Authorization": f"Bearer {API_TOKEN}"}
 
 except Exception as e:
-    log.exception(f"Erro ao carregar variáveis de ambiente: {e}")
-    log.error("Erro ao carregar as variáveis de ambiente. Verifique o arquivo .env.")
+    log.exception(f"Erro ao carregar variaveis de ambiente: {e}")
+    log.error("Erro ao carregar as variaveis de ambiente. Verifique o arquivo .env.")
 
 
 def get_dados(headers):
-    """
-    aqui solicita o id do chamado, o numero de terminais e logo
-    em seguida faz o get na API do Tomticket
-    """
     ticket_id = input("Digite o ID do chamado: ")
     n_terminais = input("Digite o número de terminais: ")
-    
-    log.info('Chama primeira requisicao.')
+
     try:
-        response_chamado = requests.get(f"{API_TICKET_URL}{ticket_id}", headers=headers, timeout=2)
-        
+        log.info("Consultando dados do chamado...")
+        response_chamado = requests.get(
+            f"{API_TICKET_URL}{ticket_id}", headers=headers, timeout=2
+        )
+
         if response_chamado.status_code == 200:
-            log.info('Requisicao do chamado bem sucedida.')
+            log.info("Requisicao do chamado bem sucedida.")
+
             dados_chamado = response_chamado.json()
+            log.debug(f"Dados do chamado: {dados_chamado}")
+
+            # captura do conta-empresa-loja
             conta_empresa_loja = dados_chamado["data"]["customer"]["internal_id"]
-            
-            log.info('Chama segunda requisicao.')
-            response_cliente = requests.get(f"{API_URL}{conta_empresa_loja}", headers=headers, timeout=2)
-            
+
+            log.info("Consultando dados do cliente...")
+            response_cliente = requests.get(
+                f"{API_URL}{conta_empresa_loja}", headers=headers, timeout=2
+            )
+
             return response_chamado, response_cliente, n_terminais
         else:
-            log.error(f"Retorno da requisição do chamado: {response_chamado.status_code} - {response_chamado.reason}")
+            log.error(
+                f"Retorno da requisição do chamado: {response_chamado.status_code} - {response_chamado.reason}"
+            )
 
     except requests.exceptions.RequestException as e:
         log.exception(f"Erro ao fazer a requisição do chamado: {e}")
         log.info("Erro ao obter dados do chamado. Verifique o ID e tente novamente.")
         return None, None, None
-    
+
 
 def organiza_os_dados(response_chamado, response_cliente, n_terminais):
     """
@@ -139,22 +156,24 @@ def organiza_os_dados(response_chamado, response_cliente, n_terminais):
 
 
 if __name__ == "__main__":
-    log.info('Aplicacao iniciada.')
+    log.info("Aplicacao iniciada.")
     while True:
-        log.info('chama get_dados()')
+        log.info("chama get_dados()")
         response_chamado, response_cliente, n_terminais = get_dados(headers)
         if not response_chamado or not response_cliente:
-            log.warning('Reiniciando programa devido a erro nas requisições.')
+            log.warning("Reiniciando programa devido a erro nas requisições.")
             continue
-        
-        log.info('chama organiza_os_dados()')
+
+        log.info("chama organiza_os_dados()")
         planilha = organiza_os_dados(response_chamado, response_cliente, n_terminais)
 
         # salva tudão
         caminho_base = f"G:\\Drives compartilhados\\FICHAS DE IMPLANTACAO"
         if not os.path.exists(caminho_base):
             caminho_base = os.path.join(os.path.expanduser("~"), "Documents")
-            log.info(f"Caminho do google drive nao encontrado. Salvando em: {caminho_base}\n")
+            log.info(
+                f"Caminho do google drive nao encontrado. Salvando em: {caminho_base}\n"
+            )
 
         primeira_letra = planilha["Razão Social"][0].upper()
         subpasta_letra = os.path.join(caminho_base, primeira_letra)
@@ -162,11 +181,11 @@ if __name__ == "__main__":
         pasta_razao_social = os.path.join(subpasta_letra, planilha["Razão Social"])
         os.makedirs(pasta_razao_social, exist_ok=True)
         arquivo_excel = os.path.join(pasta_razao_social, f"{planilha['Loja']}.xlsx")
-        
+
         caminho_imagem = encontrar_imagem("payer.png")
 
-        log.info('Chama gerar_planilha_estilizada()')
+        log.info("Chama gerar_planilha_estilizada()")
         gerar_planilha_estilizada(planilha, arquivo_excel, caminho_imagem)
-        
+
         log.info("Abrindo pasta.")
-        os.startfile(pasta_razao_social) 
+        os.startfile(pasta_razao_social)
