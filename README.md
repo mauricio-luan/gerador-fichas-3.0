@@ -1,4 +1,4 @@
-# Gerador de Fichas de Implantação 2.0
+# Gerador de Fichas de Implantação 3.0
 
 Sistema automatizado para geração de fichas de implantação a partir de dados do TomTicket.
 
@@ -23,17 +23,20 @@ Este projeto automatiza a criação de fichas de implantação em Excel, extrain
 ## Instalação
 
 1. **Clone o repositório:**
+
 ```bash
-git clone https://github.com/mauricioluanss/gerador-ficha-2.0.git
-cd gerador-ficha-2.0
+git clone https://github.com/mauricioluanss/gerador-fichas-3.0.git
+cd gerador-fichas-3.0
 ```
 
 2. **Instale as dependências:**
+
 ```bash
 pip install -r requirements.txt
 ```
 
 3. **Configure as variáveis de ambiente:**
+
 ```bash
 # Copie o arquivo de exemplo
 cp env.example .env
@@ -63,15 +66,7 @@ API_TOKEN=seu_token_aqui
 
 ## Como usar
 
-### Executável (Recomendado)
-
-O executável está disponível na pasta `dist/`. Basta executar:
-
-```bash
-./dist/GeradorDeFichas_2.0.exe
-```
-
-### Código fonte
+Código fonte
 
 Para executar diretamente o código Python:
 
@@ -90,24 +85,24 @@ python src/main.py
 ## Estrutura de arquivos
 
 ```
-ficha-2.0/
+ficha-3.0/
 ├── src/
 │   ├── main.py              # Arquivo principal
 │   ├── gera_planilha.py     # Geração de planilhas
 │   └── encontra_imagem.py   # Localização de imagens
-├── dist/                    # Executável compilado
 ├── .env                     # Configurações (não commitado)
-├── env.example             # Exemplo de configuração
 ├── requirements.txt        # Dependências Python
-└── README.md              # Este arquivo
-```
 
+config_log.py   # arquivo configuração de logs
+app.log         # arquivo de logs gerados
+```
 
 ## Dados extraídos
 
 O sistema extrai automaticamente:
 
 **Dados do cliente:**
+
 - Nome Fantasia
 - Razão Social
 - CNPJ
@@ -117,10 +112,12 @@ O sistema extrai automaticamente:
 - E-mail
 
 **Dados do chamado:**
+
 - Número do protocolo
 - Data de criação
 
 **Tokens gerados:**
+
 - Tokens únicos para cada terminal
 
 ## Saída

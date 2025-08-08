@@ -20,10 +20,11 @@ def configura_logger(nome_logger="gerador-fichas-3.0"):
         logging.INFO
     )  # Apenas INFO ou mais graves irão para o console
     console_handler.setFormatter(formatter)
+    console_handler.encoding = "utf-8"
 
     # Handler para o arquivo (salva TUDO, desde DEBUG)
     file_handler = logging.FileHandler(
-        "app.log", mode="w"
+        "app.log", mode="w", encoding="utf-8"
     )  # 'w' para reescrever o arquivo a cada execução
     file_handler.setLevel(logging.DEBUG)  # Tudo a partir de DEBUG será salvo no arquivo
     file_handler.setFormatter(formatter)

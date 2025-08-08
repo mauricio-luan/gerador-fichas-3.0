@@ -8,9 +8,9 @@
 #
 # Copyright (c) 2025 Payer Serviços de Pagamento LTDA. Todos os direitos reservados.
 
-import requests
 import datetime
 import os
+import requests
 from dotenv import load_dotenv
 from gera_planilha import gerar_planilha_estilizada
 from encontra_imagem import encontrar_imagem
@@ -37,17 +37,24 @@ try:
     API_URL = os.getenv("API_URL")
     API_TICKET_URL = os.getenv("API_TICKET_URL")
     API_TOKEN = os.getenv("API_TOKEN")
-    log.debug("Variaveis de ambiente carregadas.")
     headers = {"Authorization": f"Bearer {API_TOKEN}"}
+
+    log.debug("Variaveis de ambiente carregadas.")
 
 except Exception as e:
     log.exception(f"Erro ao carregar variaveis de ambiente: {e}")
     log.error("Erro ao carregar as variaveis de ambiente. Verifique o arquivo .env.")
 
 
-def get_dados(headers):
-    ticket_id = input("Digite o ID do chamado: ")
-    n_terminais = input("Digite o número de terminais: ")
+def get_id_chamado_e_terminais():
+    ticket_id = str(input("Digite o ID do chamado: "))
+    n_terminais = int(input("Digite o número de terminais: "))
+
+    return ticket_id, n_terminais
+
+
+def get_dados_chamado(headers):
+    ticket_id, n_terminais = get_id_chamado_e_terminais()
 
     try:
         log.info("Consultando dados do chamado...")
@@ -56,23 +63,19 @@ def get_dados(headers):
         )
 
         if response_chamado.status_code == 200:
-            log.info("Requisicao do chamado bem sucedida.")
+            log.debug("Requisicao do chamado bem sucedida.")
 
             dados_chamado = response_chamado.json()
             log.debug(f"Dados do chamado: {dados_chamado}")
 
-            # captura do conta-empresa-loja
+            # captura do conta-empresa-loja para uso em 'get_dados_cliente'
             conta_empresa_loja = dados_chamado["data"]["customer"]["internal_id"]
 
-            log.info("Consultando dados do cliente...")
-            response_cliente = requests.get(
-                f"{API_URL}{conta_empresa_loja}", headers=headers, timeout=2
-            )
+            return response_chamado, conta_empresa_loja, n_terminais
 
-            return response_chamado, response_cliente, n_terminais
         else:
             log.error(
-                f"Retorno da requisição do chamado: {response_chamado.status_code} - {response_chamado.reason}"
+                f"Retorno da requisição do chamado: {response_chamado.status_code}: {response_chamado.reason}"
             )
 
     except requests.exceptions.RequestException as e:
@@ -81,7 +84,43 @@ def get_dados(headers):
         return None, None, None
 
 
+def get_dados_cliente(headers, conta_empresa_loja):
+    try:
+        log.info("Consultando dados do cliente...")
+        response_cliente = requests.get(
+            f"{API_URL}{conta_empresa_loja}", headers=headers, timeout=2
+        )
+
+        if response_cliente.status_code == 200:
+            log.debug("Requisicao do cliente bem sucedida.")
+
+            dados_cliente = response_cliente.json()
+            log.debug(f"Dados do cliente: {dados_cliente}")
+
+            return response_cliente
+        else:
+            log.error(
+                f"Retorno da requisição do cliente: {response_cliente.status_code}: {response_cliente.reason}"
+            )
+            return None
+
+    except requests.exceptions.RequestException as e:
+        log.exception(f"Erro ao fazer a requisição do cliente: {e}")
+        log.info(
+            "Erro ao obter dados do cliente. Verifique o conta_empresa_loja e tente novamente."
+        )
+        return None
+
+
+def get_todos_dados():
+    response_chamado, conta_empresa_loja, n_terminais = get_dados_chamado(headers)
+    response_cliente = get_dados_cliente(headers, conta_empresa_loja)
+
+    return response_chamado, response_cliente, n_terminais
+
+
 def organiza_os_dados(response_chamado, response_cliente, n_terminais):
+    log.info("Iniciando a formatação dos dados...")
     """
     Realiza o filtro das informações necessárias sobre o cliente
     e o chamado para repassar a função que gera a planilha
@@ -155,20 +194,10 @@ def organiza_os_dados(response_chamado, response_cliente, n_terminais):
     return planilha
 
 
-if __name__ == "__main__":
-    log.info("Aplicacao iniciada.")
-    while True:
-        log.info("chama get_dados()")
-        response_chamado, response_cliente, n_terminais = get_dados(headers)
-        if not response_chamado or not response_cliente:
-            log.warning("Reiniciando programa devido a erro nas requisições.")
-            continue
+def definir_contexto_salvamento(planilha):
+    caminho_base = f"G:\\Drives compartilhados\\FICHAS DE IMPLANTACAO"
 
-        log.info("chama organiza_os_dados()")
-        planilha = organiza_os_dados(response_chamado, response_cliente, n_terminais)
-
-        # salva tudão
-        caminho_base = f"G:\\Drives compartilhados\\FICHAS DE IMPLANTACAO"
+    try:
         if not os.path.exists(caminho_base):
             caminho_base = os.path.join(os.path.expanduser("~"), "Documents")
             log.info(
@@ -184,8 +213,38 @@ if __name__ == "__main__":
 
         caminho_imagem = encontrar_imagem("payer.png")
 
-        log.info("Chama gerar_planilha_estilizada()")
+        return arquivo_excel, caminho_imagem, pasta_razao_social
+
+    except Exception as e:
+        log.exception(f"Erro ao definir contexto de salvamento: {e}")
+        return None, None, None
+
+
+def main():
+    while True:
+        log.debug("Chama get_todos_dados()...")
+        response_chamado, response_cliente, n_terminais = get_todos_dados()
+        if not response_chamado or not response_cliente:
+            log.warning("Reiniciando programa devido a erro nas requisições.")
+            continue
+
+        log.debug("Chama organiza_os_dados()")
+        planilha = organiza_os_dados(response_chamado, response_cliente, n_terminais)
+
+        arquivo_excel, caminho_imagem, pasta_razao_social = definir_contexto_salvamento(
+            planilha
+        )
+        if not arquivo_excel or not caminho_imagem or not pasta_razao_social:
+            log.warning("Reiniciando programa devido a erro no contexto de salvamento.")
+            continue
+
+        log.debug("Chama gerar_planilha_estilizada()")
         gerar_planilha_estilizada(planilha, arquivo_excel, caminho_imagem)
 
         log.info("Abrindo pasta.")
         os.startfile(pasta_razao_social)
+
+
+if __name__ == "__main__":
+    log.info("Aplicacao iniciada.")
+    main()
