@@ -14,7 +14,13 @@ Este projeto automatiza a criação de fichas de implantação em Excel, extrain
 - Organização automática de arquivos por cliente
 - Interface com logo personalizada
 
-## Pré-requisitos
+## Como usar
+
+- Baixe a pasta `dist`
+- Copie o `env.example` para dentro da dist como .env, e insira o token
+- Execute o programa
+
+## Pré-requisitos para rodar em modo dev
 
 - Python 3.7+
 - Acesso à API do TomTicket
@@ -23,11 +29,6 @@ Este projeto automatiza a criação de fichas de implantação em Excel, extrain
 ## Instalação
 
 1. **Clone o repositório:**
-
-```bash
-git clone https://github.com/mauricioluanss/gerador-fichas-3.0.git
-cd gerador-fichas-3.0
-```
 
 2. **Instale as dependências:**
 
@@ -45,8 +46,6 @@ cp env.example .env
 ```
 
 ## Configuração
-
-### Arquivo .env
 
 Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 
