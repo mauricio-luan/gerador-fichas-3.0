@@ -53,6 +53,36 @@ def get_id_chamado_e_terminais():
     return ticket_id, n_terminais
 
 
+def get_servico_cartao():
+    print("Serviços de Cartão")
+    sc = int(
+        input(
+            "1) SC2 2) SC3 3) SC4 4) SCS_VERO 5) SCS_CIELO 6) SIMULADOR\nSelecione a opçao: "
+        )
+    )
+    try:
+        match sc:
+            case 1:
+                return "SC2"
+            case 2:
+                return "SC3"
+            case 3:
+                return "SC4"
+            case 4:
+                return "SCS_VERO"
+            case 5:
+                return "SCS_CIELO"
+            case 6:
+                return "SIMULADOR"
+            case _:
+                log.info(
+                    f"Tu digitou uma opção inválida: {sc}. Foi selecionado o padrão SC2.\n"
+                )
+                return "SC2"
+    except Exception as e:
+        log.exception(f"Erro: {e}")
+
+
 def get_dados_chamado(headers):
     ticket_id, n_terminais = get_id_chamado_e_terminais()
 
@@ -119,7 +149,7 @@ def get_todos_dados():
     return response_chamado, response_cliente, n_terminais
 
 
-def organiza_os_dados(response_chamado, response_cliente, n_terminais):
+def organiza_os_dados(response_chamado, response_cliente, n_terminais, sc):
     log.info("Iniciando a formatação dos dados...")
     """
     Realiza o filtro das informações necessárias sobre o cliente
@@ -188,6 +218,7 @@ def organiza_os_dados(response_chamado, response_cliente, n_terminais):
         "Empresa": dicionario["Empresa"],
         "Loja": dicionario["Loja"],
         "Token Payer": " / ".join(tokens),
+        "Serviço Cartão": str(sc),
     }
     log.debug(f"Dados organizados: {planilha}")
 
@@ -228,8 +259,12 @@ def main():
             log.warning("Reiniciando programa devido a erro nas requisições.")
             continue
 
+        sc = get_servico_cartao()
+
         log.debug("Chama organiza_os_dados()")
-        planilha = organiza_os_dados(response_chamado, response_cliente, n_terminais)
+        planilha = organiza_os_dados(
+            response_chamado, response_cliente, n_terminais, sc
+        )
 
         arquivo_excel, caminho_imagem, pasta_razao_social = definir_contexto_salvamento(
             planilha
