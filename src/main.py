@@ -87,7 +87,7 @@ def get_dados_chamado(headers):
     ticket_id, n_terminais = get_id_chamado_e_terminais()
 
     try:
-        log.info("Consultando dados do chamado...")
+        log.debug("Consultando dados do chamado...")
         response_chamado = requests.get(
             f"{API_TICKET_URL}{ticket_id}", headers=headers, timeout=2
         )
@@ -116,7 +116,7 @@ def get_dados_chamado(headers):
 
 def get_dados_cliente(headers, conta_empresa_loja):
     try:
-        log.info("Consultando dados do cliente...")
+        log.debug("Consultando dados do cliente...")
         response_cliente = requests.get(
             f"{API_URL}{conta_empresa_loja}", headers=headers, timeout=2
         )
@@ -150,11 +150,11 @@ def get_todos_dados():
 
 
 def organiza_os_dados(response_chamado, response_cliente, n_terminais, sc):
-    log.info("Iniciando a formatação dos dados...")
     """
     Realiza o filtro das informações necessárias sobre o cliente
     e o chamado para repassar a função que gera a planilha
     """
+    log.debug("Iniciando a formatação dos dados...")
 
     dados_chamado = response_chamado.json()
     dados_cliente = response_cliente.json()
@@ -276,10 +276,10 @@ def main():
         log.debug("Chama gerar_planilha_estilizada()")
         gerar_planilha_estilizada(planilha, arquivo_excel, caminho_imagem)
 
-        log.info("Abrindo pasta.")
+        log.debug("Abrindo pasta.")
         os.startfile(pasta_razao_social)
 
 
 if __name__ == "__main__":
-    log.info("Aplicacao iniciada.")
+    log.debug("Aplicacao iniciada.")
     main()
