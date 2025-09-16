@@ -8,28 +8,28 @@
 #
 # Copyright (c) 2025 Payer Serviços de Pagamento LTDA. Todos os direitos reservados.
 
-import datetime
-import os
-import requests
-from src.logic.load_env import load_env
-from src.logic.gera_planilha import gerar_planilha_estilizada
-from src.logic.encontra_imagem import encontrar_imagem
-from src.logic.config_log import configura_logger
-from src.logic.get_user_info import get_id_chamado_e_terminais
+# import datetime
+# import os
+# import requests
+# from src.logic.load_env import load_env
+# from src.logic.gera_planilha import gerar_planilha_estilizada
+# from src.logic.encontra_imagem import encontrar_imagem
+# from src.logic.config_log import configura_logger
+# from logic.get_user_info import get_id_chamado_e_terminais
 
-log = configura_logger("gerador-fichas-3.0")
+# log = configura_logger("gerador-fichas-3.0")
 
-print(
-    """
-██████╗  █████╗ ██╗   ██╗███████╗██████╗
-██╔══██╗██╔══██╗╚██╗ ██╔╝██╔════╝██╔══██╗
-██████╔╝███████║ ╚████╔╝ █████╗  ██████╔╝
-██╔═══╝ ██╔══██║  ╚██╔╝  ██╔══╝  ██╔══██╗
-██║     ██║  ██║   ██║   ███████╗██║  ██║
-╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
-Gerador de Fichas de Implantação · 2025 · Mauricio Luan
-"""
-)
+# print(
+#     """
+# ██████╗  █████╗ ██╗   ██╗███████╗██████╗
+# ██╔══██╗██╔══██╗╚██╗ ██╔╝██╔════╝██╔══██╗
+# ██████╔╝███████║ ╚████╔╝ █████╗  ██████╔╝
+# ██╔═══╝ ██╔══██║  ╚██╔╝  ██╔══╝  ██╔══██╗
+# ██║     ██║  ██║   ██║   ███████╗██║  ██║
+# ╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
+# Gerador de Fichas de Implantação · 2025 · Mauricio Luan
+# """
+# )
 
 
 # def get_id_chamado_e_terminais():
@@ -236,14 +236,27 @@ Gerador de Fichas de Implantação · 2025 · Mauricio Luan
 #         log.exception(f"Erro ao definir contexto de salvamento: {e}")
 #         return None, None, None
 
+from logic.get_user_info import get_id_e_terminais
+
+print(
+    """
+██████╗  █████╗ ██╗   ██╗███████╗██████╗
+██╔══██╗██╔══██╗╚██╗ ██╔╝██╔════╝██╔══██╗
+██████╔╝███████║ ╚████╔╝ █████╗  ██████╔╝
+██╔═══╝ ██╔══██║  ╚██╔╝  ██╔══╝  ██╔══██╗
+██║     ██║  ██║   ██║   ███████╗██║  ██║
+╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
+Gerador de Fichas de Implantação · 2025 · Mauricio Luan
+"""
+)
+
 
 def main():
-    log = configura_logger("gerador-fichas-3.0")
-    api_url, api_ticket_url, headers = load_env()
-
     while True:
-        ticket_id, n_terminais = get_id_chamado_e_terminais()
-        return ticket_id, n_terminais
+        try:
+            ticket_id, n_terminais = get_id_e_terminais()
+        except ValueError as e:
+            print(f"Erro: {e}")
         # log.debug("Chama get_todos_dados()...")
         # response_chamado, response_cliente, n_terminais = get_todos_dados()
         # if not response_chamado or not response_cliente:
