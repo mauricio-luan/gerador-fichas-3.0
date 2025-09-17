@@ -119,6 +119,7 @@
 #         return None, None, None
 
 from time import sleep
+from pydantic import ValidationError
 from logic.load_env import load_env
 from logic.get_user_info import get_id_e_terminais, get_servico_cartao
 from logic.get_tomticket_data import (
@@ -126,6 +127,7 @@ from logic.get_tomticket_data import (
     get_codigo_payer,
     get_dados_customer,
 )
+from schemas.ficha import dados_model_validate
 
 print(
     """
@@ -158,21 +160,18 @@ def main():
             codigo_payer = get_codigo_payer(dados_ticket)
             dados_customer = get_dados_customer(customer_url, codigo_payer, header)
 
-            print(dados_customer)
+            ticket, customer = dados_model_validate(dados_ticket, dados_customer)
+
+            print(ticket, customer)
 
         except ValueError as e:
             print(f"\nErro: {e}")
 
+        except ValidationError as e:
+            print(f"\nErro de validacao dos dados: {e}")
+
         except Exception as e:
             print(f"\nErro inesperado: {e}")
-
-        # log.debug("Chama get_todos_dados()...")
-        # response_chamado, response_cliente, n_terminais = get_todos_dados()
-        # if not response_chamado or not response_cliente:
-        #     log.warning("Reiniciando programa devido a erro nas requisições.")
-        #     continue
-
-        # sc = get_servico_cartao()
 
         # log.debug("Chama organiza_os_dados()")
         # planilha = organiza_os_dados(
