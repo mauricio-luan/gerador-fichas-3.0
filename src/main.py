@@ -10,95 +10,11 @@
 
 # import datetime
 # import os
-# import requests
-# from src.logic.load_env import load_env
 # from src.logic.gera_planilha import gerar_planilha_estilizada
 # from src.logic.encontra_imagem import encontrar_imagem
 # from src.logic.config_log import configura_logger
-# from logic.get_user_info import get_id_chamado_e_terminais
 
 # log = configura_logger("gerador-fichas-3.0")
-
-# print(
-#     """
-# ██████╗  █████╗ ██╗   ██╗███████╗██████╗
-# ██╔══██╗██╔══██╗╚██╗ ██╔╝██╔════╝██╔══██╗
-# ██████╔╝███████║ ╚████╔╝ █████╗  ██████╔╝
-# ██╔═══╝ ██╔══██║  ╚██╔╝  ██╔══╝  ██╔══██╗
-# ██║     ██║  ██║   ██║   ███████╗██║  ██║
-# ╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
-# Gerador de Fichas de Implantação · 2025 · Mauricio Luan
-# """
-# )
-
-
-# def get_id_chamado_e_terminais():
-#     ticket_id = str(input("Digite o ID do chamado: "))
-#     n_terminais = int(input("Digite o número de terminais: "))
-
-#     return ticket_id, n_terminais
-
-
-# def get_servico_cartao():
-#     print("Serviços de Cartão")
-#     sc = int(
-#         input(
-#             "1) SC2 2) SC3 3) SC4 4) SCS_VERO 5) SCS_CIELO 6) SIMULADOR\nSelecione a opçao: "
-#         )
-#     )
-#     try:
-#         match sc:
-#             case 1:
-#                 return "SC2"
-#             case 2:
-#                 return "SC3"
-#             case 3:
-#                 return "SC4"
-#             case 4:
-#                 return "SCS_VERO"
-#             case 5:
-#                 return "SCS_CIELO"
-#             case 6:
-#                 return "SIMULADOR"
-#             case _:
-#                 log.info(
-#                     f"Tu digitou uma opção inválida: {sc}. Foi selecionado o padrão SC2.\n"
-#                 )
-#                 return "SC2"
-#     except Exception as e:
-#         log.exception(f"Erro: {e}")
-
-
-# def get_dados_chamado(headers):
-#     ticket_id, n_terminais = get_id_chamado_e_terminais()
-
-#     try:
-#         log.debug("Consultando dados do chamado...")
-#         response_chamado = requests.get(
-#             f"{API_TICKET_URL}{ticket_id}", headers=headers, timeout=2
-#         )
-
-#         if response_chamado.status_code == 200:
-#             log.debug("Requisicao do chamado bem sucedida.")
-
-#             dados_chamado = response_chamado.json()
-#             log.debug(f"Dados do chamado: {dados_chamado}")
-
-#             # captura do conta-empresa-loja para uso em 'get_dados_cliente'
-#             conta_empresa_loja = dados_chamado["data"]["customer"]["internal_id"]
-
-#             return response_chamado, conta_empresa_loja, n_terminais
-
-#         else:
-#             log.error(
-#                 f"Retorno da requisição do chamado: {response_chamado.status_code}: {response_chamado.reason}"
-#             )
-
-#     except requests.exceptions.RequestException as e:
-#         log.exception(f"Erro ao fazer a requisição do chamado: {e}")
-#         log.info("Erro ao obter dados do chamado. Verifique o ID e tente novamente.")
-#         return None, None, None
-
 
 # def get_dados_cliente(headers, conta_empresa_loja):
 #     try:
@@ -236,7 +152,10 @@
 #         log.exception(f"Erro ao definir contexto de salvamento: {e}")
 #         return None, None, None
 
+from logic.load_env import load_env
 from logic.get_user_info import get_id_e_terminais, get_servico_cartao
+from logic.get_tomticket_data import get_dados_ticket, get_codigo_payer
+from time import sleep
 
 print(
     """
@@ -252,12 +171,28 @@ Gerador de Fichas de Implantação · 2025 · Mauricio Luan
 
 
 def main():
+    try:
+        ticket_url, customer_url, header = load_env()
+    except ValueError as e:
+        print(f"\nErro ao carregar variaveis de ambiente: {e}")
+        print("Fechando em 5 segundos...")
+        sleep(5)
+        return
+
     while True:
         try:
             ticket_id, n_terminais = get_id_e_terminais()
             sc = get_servico_cartao()
+            dados_ticket = get_dados_ticket(ticket_url, ticket_id, header)
+            codigo_payer = get_codigo_payer(dados_ticket)
+            print(codigo_payer)
+
         except ValueError as e:
-            print(f"Erro: {e}")
+            print(f"\nErro: {e}")
+
+        except Exception as e:
+            print(f"\nErro inesperado: {e}")
+
         # log.debug("Chama get_todos_dados()...")
         # response_chamado, response_cliente, n_terminais = get_todos_dados()
         # if not response_chamado or not response_cliente:

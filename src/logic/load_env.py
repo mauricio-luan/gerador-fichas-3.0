@@ -10,15 +10,15 @@ def load_env():
     # log.debug("Carregando variaveis de ambiente...")
     load_dotenv()
 
-    api_url = os.getenv("API_URL")
-    api_ticket_url = os.getenv("API_TICKET_URL")
-    api_token = os.getenv("API_TOKEN")
+    ticket_url = os.getenv("API_TICKET_URL")
+    customer_url = os.getenv("API_CUSTOMER_URL")
+    token = os.getenv("API_TOKEN")
 
-    if not all([api_url, api_ticket_url, api_token]):
+    if not all([ticket_url, customer_url, token]):
         # log.error("Erro ao carregar variaveis de ambiente")
         raise ValueError("Uma ou mais variaveis de ambiente estao faltando.")
 
     # log.debug("Variaveis de ambiente carregadas.")
-    headers = {"Authorization": f"Bearer {api_token}"}
+    header = {"Authorization": f"Bearer {token}"}
 
-    return api_url, api_ticket_url, headers
+    return ticket_url, customer_url, header
