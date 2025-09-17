@@ -1,8 +1,8 @@
-def get_id_e_terminais():
-    id = input("Digite o ID do chamado: ").strip()
+def get_id_e_terminais() -> tuple[str, int]:
+    ticket_id = input("Digite o ID do chamado: ").strip()
     n_terminais = input("Digite o número de terminais: ").strip()
 
-    if not id or not n_terminais:
+    if not ticket_id or not n_terminais:
         raise ValueError("Todos os campos devem ser preenchidos.\n")
 
     try:
@@ -13,10 +13,10 @@ def get_id_e_terminais():
     if n_terminais < 1:
         raise ValueError("O número de terminais deve ser maior ou igual a 1.\n")
 
-    return id, n_terminais
+    return ticket_id, n_terminais
 
 
-def get_servico_cartao():
+def get_servico_cartao() -> str:
     opcoes = {
         1: "SC2",
         2: "SC3",
@@ -25,18 +25,20 @@ def get_servico_cartao():
         5: "SCS_CIELO",
         6: "SIMULADOR",
     }
-    print("\Serviços de cartão:")
+    print("Serviços de cartão:")
     for opcao, servico in opcoes.items():
         print(f"{opcao}) {servico}")
 
-    sc = input("Selecione a opçao: ").strip()
+    servico_cartao = input("Selecione a opçao: ").strip()
     try:
-        sc = int(sc)
+        servico_cartao = int(servico_cartao)
     except ValueError as e:
         raise ValueError("Valor inválido. Digite um numero inteiro.\n") from e
 
-    servico_selecionado = opcoes.get(sc)
+    servico_selecionado = opcoes.get(servico_cartao)
     if servico_selecionado is None:
-        raise ValueError("Opção inválida. Digite um número dentre as opções.\n")
+        raise ValueError(
+            "Serviço de cartão inválido. Digite um número dentre as opções.\n"
+        )
 
     return servico_selecionado
