@@ -236,7 +236,7 @@
 #         log.exception(f"Erro ao definir contexto de salvamento: {e}")
 #         return None, None, None
 
-from logic.get_user_info import get_id_e_terminais
+from logic.get_user_info import get_id_e_terminais, get_servico_cartao
 
 print(
     """
@@ -255,6 +255,7 @@ def main():
     while True:
         try:
             ticket_id, n_terminais = get_id_e_terminais()
+            sc = get_servico_cartao()
         except ValueError as e:
             print(f"Erro: {e}")
         # log.debug("Chama get_todos_dados()...")

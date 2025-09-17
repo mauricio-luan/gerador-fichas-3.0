@@ -17,32 +17,29 @@ def get_id_e_terminais():
 
 
 def get_servico_cartao():
-    print("Serviços de Cartão")
-    sc = int(
-        input(
-            "1) SC2 2) SC3 3) SC4 4) SCS_VERO 5) SCS_CIELO 6) SIMULADOR\nSelecione a opçao: "
-        )
-    )
-    try:
-        match sc:
-            case 1:
-                return "SC2"
-            case 2:
-                return "SC3"
-            case 3:
-                return "SC4"
-            case 4:
-                return "SCS_VERO"
-            case 5:
-                return "SCS_CIELO"
-            case 6:
-                return "SIMULADOR"
-            case _:
-                print("toto")
-                # log.info(
-                #     f"Tu digitou uma opção inválida: {sc}. Foi selecionado o padrão SC2.\n"
-                # )
-                return "SC2"
-    except Exception as e:
-        print(e)
-        # log.exception(f"Erro: {e}")
+    opcoes = {
+        1: "SC2",
+        2: "SC3",
+        3: "SC4",
+        4: "SCS_VERO",
+        5: "SCS_CIELO",
+        6: "SIMULADOR",
+    }
+
+    while True:
+        for opcao, servico in opcoes.items():
+            print(f"{opcao}) {servico}")
+
+        sc = input("Selecione a opçao: ").strip()
+
+        try:
+            sc = int(sc)
+            servico_selecionado = opcoes.get(sc)
+
+            if servico_selecionado is None:
+                raise ValueError("Opção inválida.")
+
+            return servico_selecionado
+
+        except ValueError as e:
+            print(f"Erro: {e}\nTente novamente.")
