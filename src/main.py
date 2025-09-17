@@ -16,40 +16,6 @@
 
 # log = configura_logger("gerador-fichas-3.0")
 
-# def get_dados_cliente(headers, conta_empresa_loja):
-#     try:
-#         log.debug("Consultando dados do cliente...")
-#         response_cliente = requests.get(
-#             f"{API_URL}{conta_empresa_loja}", headers=headers, timeout=2
-#         )
-
-#         if response_cliente.status_code == 200:
-#             log.debug("Requisicao do cliente bem sucedida.")
-
-#             dados_cliente = response_cliente.json()
-#             log.debug(f"Dados do cliente: {dados_cliente}")
-
-#             return response_cliente
-#         else:
-#             log.error(
-#                 f"Retorno da requisição do cliente: {response_cliente.status_code}: {response_cliente.reason}"
-#             )
-#             return None
-
-#     except requests.exceptions.RequestException as e:
-#         log.exception(f"Erro ao fazer a requisição do cliente: {e}")
-#         log.info(
-#             "Erro ao obter dados do cliente. Verifique o conta_empresa_loja e tente novamente."
-#         )
-#         return None
-
-
-# def get_todos_dados():
-#     response_chamado, conta_empresa_loja, n_terminais = get_dados_chamado(headers)
-#     response_cliente = get_dados_cliente(headers, conta_empresa_loja)
-
-#     return response_chamado, response_cliente, n_terminais
-
 
 # def organiza_os_dados(response_chamado, response_cliente, n_terminais, sc):
 #     """
@@ -152,10 +118,14 @@
 #         log.exception(f"Erro ao definir contexto de salvamento: {e}")
 #         return None, None, None
 
+from time import sleep
 from logic.load_env import load_env
 from logic.get_user_info import get_id_e_terminais, get_servico_cartao
-from logic.get_tomticket_data import get_dados_ticket, get_codigo_payer
-from time import sleep
+from logic.get_tomticket_data import (
+    get_dados_ticket,
+    get_codigo_payer,
+    get_dados_customer,
+)
 
 print(
     """
@@ -182,10 +152,13 @@ def main():
     while True:
         try:
             ticket_id, n_terminais = get_id_e_terminais()
-            sc = get_servico_cartao()
+            servico_cartao = get_servico_cartao()
+
             dados_ticket = get_dados_ticket(ticket_url, ticket_id, header)
             codigo_payer = get_codigo_payer(dados_ticket)
-            print(codigo_payer)
+            dados_customer = get_dados_customer(customer_url, codigo_payer, header)
+
+            print(dados_customer)
 
         except ValueError as e:
             print(f"\nErro: {e}")
