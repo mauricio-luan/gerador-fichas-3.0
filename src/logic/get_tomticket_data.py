@@ -2,9 +2,9 @@ import requests
 from requests.exceptions import HTTPError, RequestException
 
 
-def get_dados_ticket(url, id, header) -> dict:
+def get_dados_ticket(url, ticket_id, header) -> dict:
     try:
-        response = requests.get(f"{url}{id}", headers=header, timeout=2)
+        response = requests.get(f"{url}{ticket_id}", headers=header, timeout=2)
         response.raise_for_status()
 
         return response.json()
@@ -24,13 +24,22 @@ def get_dados_ticket(url, id, header) -> dict:
 
 
 def get_codigo_payer(data):
-    return data["data"]["customer"]["internal_id"]
+    try:
+        return data["data"]["customer"]["internal_id"]
+    except KeyError as e:
+        raise ValueError(f"Erro ao obter o código Payer.\nDetalhes: {e}\n\n") from e
 
-    #         dados_ticket = response_ticket.json()
-    #         # log.debug(f"Dados do ticket: {dados_ticket}")
 
-    #         # captura do conta-empresa-loja para uso em 'get_dados_cliente'
-    #         conta_empresa_loja = dados_ticket["data"]["customer"]["internal_id"]
+def get_dados_customer(url, customer_id, header) -> dict:
+    try:
+        response = requests.get(f"{url}{customer_id}", headers=header, timeout=2)
+        response.raise_for_status()
+
+        return response.json()
+    except RequestException as e:
+        raise ValueError(
+            f"Erro ao fazer na requisição do customer.\nDetalhes: {e}\n\n"
+        ) from e
 
     #         return response_ticket, conta_empresa_loja, n_terminais
 
