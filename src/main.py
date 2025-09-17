@@ -120,25 +120,23 @@
 
 from time import sleep
 from pydantic import ValidationError
-from logic.load_env import load_env
+from config.load_env import load_env
 from logic.get_user_info import get_id_e_terminais, get_servico_cartao
-from logic.get_tomticket_data import (
-    get_dados_ticket,
-    get_codigo_payer,
-    get_dados_customer,
-)
-from schemas.ficha import dados_model_validate
+from logic.get_tomticket_data import get_dados_ticket, get_dados_customer
+
+# from logic.monta_ficha import monta_ficha
+from schemas.responses import Ticket, Customer
 
 print(
     """
-██████╗  █████╗ ██╗   ██╗███████╗██████╗
-██╔══██╗██╔══██╗╚██╗ ██╔╝██╔════╝██╔══██╗
-██████╔╝███████║ ╚████╔╝ █████╗  ██████╔╝
-██╔═══╝ ██╔══██║  ╚██╔╝  ██╔══╝  ██╔══██╗
-██║     ██║  ██║   ██║   ███████╗██║  ██║
-╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
-Gerador de Fichas de Implantação · 2025 · Mauricio Luan
-"""
+	██████╗  █████╗ ██╗   ██╗███████╗██████╗
+	██╔══██╗██╔══██╗╚██╗ ██╔╝██╔════╝██╔══██╗
+	██████╔╝███████║ ╚████╔╝ █████╗  ██████╔╝
+	██╔═══╝ ██╔══██║  ╚██╔╝  ██╔══╝  ██╔══██╗
+	██║     ██║  ██║   ██║   ███████╗██║  ██║
+	╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
+	Gerador de Fichas de Implantação · 2025 · Mauricio Luan
+	"""
 )
 
 
@@ -153,16 +151,21 @@ def main():
 
     while True:
         try:
+            # captura id do ticket, numero de terminais e servico de cartao
             ticket_id, n_terminais = get_id_e_terminais()
             servico_cartao = get_servico_cartao()
 
-            dados_ticket = get_dados_ticket(ticket_url, ticket_id, header)
-            codigo_payer = get_codigo_payer(dados_ticket)
-            dados_customer = get_dados_customer(customer_url, codigo_payer, header)
+            ticket_response = get_dados_ticket(ticket_url, ticket_id, header)
+            ticket = Ticket.model_validate(ticket_response)
 
-            ticket, customer = dados_model_validate(dados_ticket, dados_customer)
+            codigo_payer = ticket.data.customer.internal_id
 
-            print(ticket, customer)
+            customer_response = get_dados_customer(customer_url, codigo_payer, header)
+            customer = Customer.model_validate(customer_response)
+
+            print(ticket)
+
+            # ficha = monta_ficha(codigo_payer, customer, n_terminais, servico_cartao)
 
         except ValueError as e:
             print(f"\nErro: {e}")

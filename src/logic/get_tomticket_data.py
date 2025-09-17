@@ -25,13 +25,6 @@ def get_dados_ticket(url, ticket_id, header):
         ) from e
 
 
-def get_codigo_payer(data):
-    try:
-        return data["data"]["customer"]["internal_id"]
-    except KeyError as e:
-        raise ValueError(f"Erro ao obter o código Payer.\nDetalhes: {e}\n\n") from e
-
-
 def get_dados_customer(url, customer_id, header):
     try:
         response = requests.get(f"{url}{customer_id}", headers=header, timeout=2)
