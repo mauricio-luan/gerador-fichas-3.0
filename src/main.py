@@ -15,7 +15,8 @@ print(
 ██╔══   ██║  ██╔╝  ██╔   ██╔═══╝ ██╔══██╗
 ██║     ██║  ██║   ██║   ███████╗██║  ██║
 ╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
-Gerador de Fichas de Implantação · 2025 · Mauricio Luan"""
+Gerador de Fichas de Implantação · 2025 · Mauricio Luan
+"""
 )
 
 
@@ -46,7 +47,6 @@ def main():
             workbook = gera_planilha(ficha)
             save(workbook, ficha)
 
-            # os.startfile(pasta_razao_social)
         except ValueError as e:
             print(f"\nErro: {e}")
 

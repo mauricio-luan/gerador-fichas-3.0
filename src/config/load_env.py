@@ -1,24 +1,29 @@
 import os
+import sys
+from pathlib import Path
 from dotenv import load_dotenv
-
-# from logic.config_log import configura_logger
-
-# log = configura_logger("gerador-fichas-3.0.load_env")
 
 
 def load_env():
-    # log.debug("Carregando variaveis de ambiente...")
-    load_dotenv()
+    if getattr(sys, "frozen", False):
+        app_path = Path(sys.executable).parent
+    else:
+        app_path = Path(__file__).parent.parent.parent
 
-    ticket_url = os.getenv("API_TICKET_URL")
-    customer_url = os.getenv("API_CUSTOMER_URL")
-    token = os.getenv("API_TOKEN")
+    env_path = app_path / ".env"
 
-    if not all([ticket_url, customer_url, token]):
-        # log.error("Erro ao carregar variaveis de ambiente")
-        raise ValueError("Uma ou mais variaveis de ambiente estao faltando.")
+    if env_path.exists():
+        load_dotenv(dotenv_path=env_path)
 
-    # log.debug("Variaveis de ambiente carregadas.")
-    header = {"Authorization": f"Bearer {token}"}
+        ticket_url = os.getenv("API_TICKET_URL")
+        customer_url = os.getenv("API_CUSTOMER_URL")
+        token = os.getenv("API_TOKEN")
 
-    return ticket_url, customer_url, header
+        if not all([ticket_url, customer_url, token]):
+            raise ValueError("Uma ou mais variaveis de ambiente estao faltando.")
+
+        header = {"Authorization": f"Bearer {token}"}
+
+        return ticket_url, customer_url, header
+    else:
+        raise ValueError(".env não encontrado.")

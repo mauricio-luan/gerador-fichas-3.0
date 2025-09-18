@@ -1,3 +1,5 @@
+import os
+import sys
 from pathlib import Path
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
@@ -5,13 +7,25 @@ from openpyxl.drawing.image import Image
 from schemas.ficha import Ficha
 
 
-def get_image_path() -> Path:
-    raiz = Path(__file__).parent.parent
-    caminho_imagem = raiz / "assets/payer.png"
+def define_path(relative_path: str) -> Path:
+    """
+    Retorna o caminho absoluto para a imagem, seja em
+    desenvolvimento ou como executável PyInstaller
+    """
     try:
-        return caminho_imagem
-    except FileNotFoundError as e:
-        print(f"Arquivo de imagem não encontrado. Detalhes: {e}")
+        base_path = Path(sys._MEIPASS)
+    except AttributeError:
+        base_path = Path(__file__).parent.parent
+
+    return base_path / relative_path
+
+
+def get_image_path() -> Path:
+    caminho_imagem = define_path("assets/payer.png")
+    if not caminho_imagem.exists():
+        raise FileNotFoundError("Arquivo de imagem não encontrado.")
+
+    return caminho_imagem
 
 
 def gera_planilha(dados: Ficha) -> Workbook:
@@ -99,6 +113,8 @@ def save(workbook: Workbook, ficha: Ficha) -> None:
         base_path = Path.home() / "Documents"
         workbook.save(base_path / nome_arquivo)
         print("Caminho do Drive não encontrado. Salvando em ~/Documentos.")
+        os.startfile(base_path)
+
     else:
         pasta_letra = base_path / letra
         pasta_letra.mkdir(exist_ok=True)
@@ -108,3 +124,4 @@ def save(workbook: Workbook, ficha: Ficha) -> None:
 
         workbook.save(pasta_razao_social / nome_arquivo)
         print(f"Arquivo salvo em: {pasta_razao_social / nome_arquivo}")
+        os.startfile(pasta_razao_social)
