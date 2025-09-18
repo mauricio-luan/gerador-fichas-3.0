@@ -1,6 +1,16 @@
 import datetime
+from pydantic import ValidationError
 from schemas.responses import Customer
 from schemas.ficha import Ficha
+
+
+def token(codigo_payer, n_terminais) -> list[str]:
+    partes = codigo_payer.split("-")
+    tokens = []
+
+    for i in range(1, int(n_terminais) + 1):
+        tokens.append(f"{partes[1]}{partes[2]}{str(i).zfill(2)}")
+    return tokens
 
 
 def monta_ficha(
@@ -36,30 +46,24 @@ def monta_ficha(
     email_bruto = linhas.get("COMERCIAL - E-mail")
     email = email_bruto.strip() if email_bruto else "Nao informado"
 
-    ficha = Ficha(
-        chamado=chamado,
-        nome_fantasia=nome_fantasia,
-        razao_social=razao_social,
-        cnpj=cnpj,
-        endereco=endereco,
-        bairro=bairro,
-        cidade=cidade,
-        contato=contato,
-        telefone=telefone,
-        email=email,
-        account=conta,
-        company=empresa,
-        store=loja,
-        token="/".join(tokens),
-        servico_cartao=servico_cartao,
-    )
-    return ficha
-
-
-def token(codigo_payer, n_terminais) -> list[str]:
-    partes = codigo_payer.split("-")
-    tokens = []
-
-    for i in range(1, int(n_terminais) + 1):
-        tokens.append(f"{partes[1]}{partes[2]}{str(i).zfill(2)}")
-    return tokens
+    try:
+        ficha = Ficha(
+            chamado=chamado,
+            nome_fantasia=nome_fantasia,
+            razao_social=razao_social,
+            cnpj=cnpj,
+            endereco=endereco,
+            bairro=bairro,
+            cidade=cidade,
+            contato=contato,
+            telefone=telefone,
+            email=email,
+            account=f"{conta} - {razao_social}",
+            company=f"{empresa} - {razao_social}",
+            store=f"{loja} - {nome_fantasia}",
+            token="/".join(tokens),
+            servico_cartao=servico_cartao,
+        )
+        return ficha
+    except ValidationError as e:
+        raise ValueError(f"Erro de validação ao criar ficha.\nDetalhes {e}\n\n") from e
