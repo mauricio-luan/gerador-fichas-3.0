@@ -1,3 +1,28 @@
+"""Ponto de entrada principal para o Gerador de Fichas (versão CLI).
+
+Este módulo fornece uma interface de linha de comando (CLI) para que o usuário
+possa gerar fichas de implantação de forma interativa. Ele orquestra todo o
+fluxo da aplicação, desde a coleta dos dados do usuário até o salvamento
+final do arquivo .xlsx.
+
+O fluxo de execução principal é:
+1. Carrega as variáveis de ambiente necessárias (URLs, chaves de API).
+2. Entra em um loop contínuo, permitindo gerar múltiplas fichas.
+3. Solicita ao usuário o ID do ticket e outras informações pertinentes.
+4. Realiza chamadas à API do TomTicket para buscar dados do ticket e do cliente.
+5. Valida os dados recebidos das APIs utilizando schemas Pydantic.
+6. Organiza os dados e os utiliza para gerar uma planilha Excel.
+7. Salva o arquivo .xlsx no sistema de arquivos local.
+
+O módulo possui tratamento de erros robusto para lidar com entradas inválidas,
+falhas de comunicação com a API e dados inconsistentes.
+"""
+
+__author__ = "Mauricio Luan"
+__version__ = "3.1.0"
+__email__ = "mauricioluan2023@exemplo.com"
+__status__ = "Production"
+
 from time import sleep
 from pydantic import ValidationError
 from config.load_env import load_env
@@ -7,12 +32,6 @@ from logic.gera_planilha import gera_planilha, save
 from logic.monta_ficha import monta_ficha
 from schemas.responses import Ticket, Customer
 
-__author__ = "Mauricio Luan"
-__version__ = "3.1.0"
-__email__ = "mauricioluan2023@exemplo.com"
-__status__ = "Production"
-
-
 print(
     """
 ██████╗  █████╗ ██╗   ██╗███████╗██████╗
@@ -21,7 +40,7 @@ print(
 ██╔══   ██║  ██╔╝  ██╔   ██╔═══╝ ██╔══██╗
 ██║     ██║  ██║   ██║   ███████╗██║  ██║
 ╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
-Gerador de Fichas de Implantação · 2025 · Mauricio Luan
+Gerador de Fichas de Implantação · 2025
 """
 )
 
