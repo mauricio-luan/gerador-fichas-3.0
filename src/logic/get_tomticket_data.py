@@ -1,5 +1,3 @@
-"""Modulo com funções para obter dados de tickets e clientes da API TomTicket"""
-
 import requests
 from requests.exceptions import HTTPError, RequestException
 

@@ -1,23 +1,10 @@
 import os
-import sys
 from pathlib import Path
+from config.define_path import define_path
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from openpyxl.drawing.image import Image
 from schemas.ficha import Ficha
-
-
-def define_path(relative_path: str) -> Path:
-    """
-    Retorna o caminho absoluto para a imagem, seja em
-    desenvolvimento ou como executável PyInstaller
-    """
-    try:
-        base_path = Path(sys._MEIPASS)
-    except AttributeError:
-        base_path = Path(__file__).parent.parent
-
-    return base_path / relative_path
 
 
 def get_image_path() -> Path:
@@ -112,7 +99,7 @@ def save(workbook: Workbook, ficha: Ficha) -> None:
     if not base_path.exists():
         base_path = Path.home() / "Documents"
         workbook.save(base_path / nome_arquivo)
-        print("Caminho do Drive não encontrado. Salvando em ~/Documentos.")
+        print(f"\nArquivo {nome_arquivo} salvo em ~/Documentos.\n")
         os.startfile(base_path)
 
     else:

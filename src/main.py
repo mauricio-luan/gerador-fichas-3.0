@@ -7,6 +7,12 @@ from logic.gera_planilha import gera_planilha, save
 from logic.monta_ficha import monta_ficha
 from schemas.responses import Ticket, Customer
 
+__author__ = "Mauricio Luan"
+__version__ = "3.1.0"
+__email__ = "mauricioluan2023@exemplo.com"
+__status__ = "Production"
+
+
 print(
     """
 ██████╗  █████╗ ██╗   ██╗███████╗██████╗
@@ -25,8 +31,8 @@ def main():
         ticket_url, customer_url, header = load_env()
     except ValueError as e:
         print(f"\nErro ao carregar variaveis de ambiente: {e}")
-        print("Fechando em 5 segundos...")
-        sleep(5)
+        print("Fechando em 2 segundos...")
+        sleep(2)
         return
 
     while True:
