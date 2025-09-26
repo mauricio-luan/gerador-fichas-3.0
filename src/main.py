@@ -1,4 +1,5 @@
-"""Ponto de entrada principal para o Gerador de Fichas (versão CLI).
+"""
+Ponto de entrada principal para o Gerador de Fichas (versão CLI).
 
 Este módulo fornece uma interface de linha de comando (CLI) para que o usuário
 possa gerar fichas de implantação de forma interativa. Ele orquestra todo o
@@ -20,7 +21,7 @@ falhas de comunicação com a API e dados inconsistentes.
 
 __author__ = "Mauricio Luan"
 __version__ = "3.1.0"
-__email__ = "mauricioluan2023@exemplo.com"
+__email__ = "mauricioluan2023@gmail.com"
 __status__ = "Production"
 
 from time import sleep
@@ -45,7 +46,7 @@ Gerador de Fichas de Implantação · 2025
 )
 
 
-def main():
+def main() -> None:
     try:
         ticket_url, customer_url, header = load_env()
     except ValueError as e:
