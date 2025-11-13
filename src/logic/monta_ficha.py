@@ -61,7 +61,7 @@ def monta_ficha(
             account=f"{conta} - {razao_social}",
             company=f"{empresa} - {razao_social}",
             store=f"{loja} - {nome_fantasia}",
-            token="/".join(tokens),
+            token=" | ".join(tokens),
             servico_cartao=servico_cartao,
         )
         return ficha

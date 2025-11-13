@@ -15,6 +15,17 @@ def get_image_path() -> Path:
     return caminho_imagem
 
 
+def ajustar_altura(ws, linha: int, texto: str, largura_coluna: float):
+    """Ajusta dinamicamente a altura da linha conforme o tamanho do texto e largura da coluna."""
+    if not texto:
+        return
+
+    capacidade_por_linha = int(largura_coluna * 1.2)
+    linhas_estimadas = (len(texto) // capacidade_por_linha) + 1
+    altura_base = 15
+    ws.row_dimensions[linha].height = altura_base * linhas_estimadas
+
+
 def gera_planilha(dados: Ficha) -> Workbook:
     wb = Workbook()
     ws = wb.active
@@ -81,6 +92,9 @@ def gera_planilha(dados: Ficha) -> Workbook:
         ws[f"B{linha_atual}"].value = valor
         ws[f"B{linha_atual}"].border = borda_fina
         ws[f"B{linha_atual}"].alignment = alinhamento_esquerda
+
+        if isinstance(valor, str):
+            ajustar_altura(ws, linha_atual, valor, ws.column_dimensions["B"].width)
 
         if linha_atual in range(13, 18):
             ws[f"B{linha_atual}"].alignment = alinhamento_central
