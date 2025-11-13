@@ -7,10 +7,10 @@ from dotenv import load_dotenv
 def load_env():
     if getattr(sys, "frozen", False):
         app_path = Path(sys.executable).parent
-        print(f"executavel: {app_path}")
+        # print(f"exe: {app_path}") <-- debug mauricio
     else:
         app_path = Path(__file__).parent.parent.parent
-        print(f"dev: {app_path}")
+        # print(f"dev: {app_path}") <-- debug mauricio
 
     env_path = app_path / ".env"
 
