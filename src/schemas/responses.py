@@ -1,13 +1,3 @@
-# Exemplo de resposta da API TomTicket.
-# As classes a seguir representam o schema Ticket que mapeia a resposta da API.
-# {
-#   "data": {
-#     "protocol": 30049,
-#     "customer": {
-#       "internal_id": "001693-009816-0001",
-#     },
-# }
-
 from typing import Optional
 from pydantic import BaseModel
 
@@ -27,21 +17,14 @@ class Ticket(BaseModel):
 
 
 # Exemplo de resposta da API TomTicket.
-# As classes a seguir representam o schema Customer que mapeia a resposta da API.
-
-#   "data": [
-#     {
-#       "name": "HAMBURGUERIA LTDA",
-#       "custom_fields": [
-#         {
-#           "name": "Nome Fantasia",
-#           "value": "HAMBURGUERIA JUAZEIRO DO NORTE"
-#         },
-#         {
-#           "name": "CNPJ",
-#           "value": "99900011100120"
-#         },
-#       ]
+# As classes a seguir representam o schema Ticket que mapeia a resposta da API.
+# {
+#   "data": {
+#     "protocol": 30049,
+#     "customer": {
+#       "internal_id": "001693-009816-0001",
+#     },
+# }
 
 
 class CustomFields(BaseModel):
@@ -58,3 +41,21 @@ class Data(BaseModel):
 class Customer(BaseModel):
     data: list[Data]
     success: bool
+
+
+# Exemplo de resposta da API TomTicket.
+# As classes a seguir representam o schema Customer que mapeia a resposta da API.
+
+#   "data": [
+#     {
+#       "name": "HAMBURGUERIA LTDA",
+#       "custom_fields": [
+#         {
+#           "name": "Nome Fantasia",
+#           "value": "HAMBURGUERIA JUAZEIRO DO NORTE"
+#         },
+#         {
+#           "name": "CNPJ",
+#           "value": "99900011100120"
+#         },
+#       ]

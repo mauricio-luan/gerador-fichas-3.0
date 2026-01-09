@@ -18,12 +18,14 @@ def get_id_e_terminais() -> tuple[str, int]:
 
 def get_servico_cartao() -> str:
     opcoes = {
+        0: "NENHUM",
         1: "SC2",
         2: "SC3",
         3: "SC4",
         4: "SCS_VERO",
         5: "SCS_CIELO",
-        6: "SIMULADOR",
+        6: "SCS_SICREDI",
+        7: "SIMULADOR",
     }
     print("Serviços de cartão:")
     for opcao, servico in opcoes.items():
