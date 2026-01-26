@@ -1,4 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
+# Import os for cross-platform path handling in PyInstaller spec
 import os
 
 a = Analysis(
