@@ -1,10 +1,15 @@
 # -*- mode: python ; coding: utf-8 -*-
+# Import os for cross-platform path handling in PyInstaller spec
+import os
 
 a = Analysis(
-    ["src\\main.py"],
+    [os.path.join("src", "main.py")],
     pathex=[],
     binaries=[],
-    datas=[("src/assets/payer.png", "assets")],
+    datas=[
+        (os.path.join("src", "assets", "payer.png"), "assets"),
+        (os.path.join("src", "assets", "payer.ico"), "assets"),
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -34,4 +39,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=os.path.join("src", "assets", "payer.ico"),
 )

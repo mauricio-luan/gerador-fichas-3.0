@@ -26,6 +26,15 @@ Além de resolver um problema prático da área, este projeto foi uma excelente 
 
 ## Como usar
 
+### Opção 1: Baixar a versão pronta (Recomendado)
+
+1. Acesse a [página de Releases](https://github.com/mauricio-luan/gerador-fichas-3.0/releases) do projeto
+2. Baixe a versão mais recente (arquivo `.zip`)
+3. Extraia o conteúdo em uma pasta de sua preferência
+4. Renomeie o arquivo `.env.example` para `.env` e insira seu token
+
+### Opção 2: Build manual
+
 - Baixe a pasta `dist`
 - Copie o `env.example` para dentro da dist como `.env`, e insira o token
 
