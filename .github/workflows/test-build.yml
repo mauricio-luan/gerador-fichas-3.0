@@ -33,10 +33,10 @@ jobs:
     - name: Verify executable exists
       run: |
         if (Test-Path "dist\GeradorFichasPayer.exe") {
-          Write-Host "✓ Executável gerado com sucesso!"
+          Write-Host "[OK] Executavel gerado com sucesso!"
           Get-Item "dist\GeradorFichasPayer.exe" | Select-Object Name, Length, LastWriteTime
         } else {
-          Write-Error "✗ Falha ao gerar executável"
+          Write-Error "[ERRO] Falha ao gerar executavel"
           exit 1
         }
       shell: powershell
