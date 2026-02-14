@@ -2,6 +2,15 @@ from typing import Optional
 from pydantic import BaseModel
 
 
+# Exemplo de resposta da API TomTicket.
+# As classes a seguir representam o schema Ticket que mapeia a resposta da API.
+# {
+#   "data": {
+#     "protocol": 30049,
+#     "customer": {
+#       "internal_id": "001693-009816-0001",
+#     },
+# }
 class CustomerData(BaseModel):
     internal_id: str
 
@@ -17,16 +26,20 @@ class Ticket(BaseModel):
 
 
 # Exemplo de resposta da API TomTicket.
-# As classes a seguir representam o schema Ticket que mapeia a resposta da API.
-# {
-#   "data": {
-#     "protocol": 30049,
-#     "customer": {
-#       "internal_id": "001693-009816-0001",
-#     },
-# }
-
-
+# As classes a seguir representam o schema Customer que mapeia a resposta da API.
+#   "data": [
+#     {
+#       "name": "HAMBURGUERIA LTDA",
+#       "custom_fields": [
+#         {
+#           "name": "Nome Fantasia",
+#           "value": "HAMBURGUERIA JUAZEIRO DO NORTE"
+#         },
+#         {
+#           "name": "CNPJ",
+#           "value": "99900011100120"
+#         },
+#       ]
 class CustomFields(BaseModel):
     name: str
     value: Optional[str] = None
@@ -41,21 +54,3 @@ class Data(BaseModel):
 class Customer(BaseModel):
     data: list[Data]
     success: bool
-
-
-# Exemplo de resposta da API TomTicket.
-# As classes a seguir representam o schema Customer que mapeia a resposta da API.
-
-#   "data": [
-#     {
-#       "name": "HAMBURGUERIA LTDA",
-#       "custom_fields": [
-#         {
-#           "name": "Nome Fantasia",
-#           "value": "HAMBURGUERIA JUAZEIRO DO NORTE"
-#         },
-#         {
-#           "name": "CNPJ",
-#           "value": "99900011100120"
-#         },
-#       ]

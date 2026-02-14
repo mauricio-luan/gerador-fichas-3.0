@@ -14,7 +14,7 @@ def token(codigo_payer, n_terminais) -> list[str]:
 
 
 def monta_ficha(
-    protocol: int, customer: Customer, n_terminais: int, servico_cartao: str
+    protocol: int, customer: Customer, n_terminais: int, servico_cartao: str, numero_cliente_sitef: str
 ) -> Ficha:
     if not customer.data:
         raise ValueError("Campo 'data' de customer está vazio.")
@@ -45,6 +45,8 @@ def monta_ficha(
     telefone = telefone_bruto if telefone_bruto else "Nao informado"
     email_bruto = linhas.get("COMERCIAL - E-mail")
     email = email_bruto.strip() if email_bruto else "Nao informado"
+    numero_cliente = f"- {numero_cliente_sitef}" if numero_cliente_sitef else ""
+    plano_contratado = f"{linhas.get('Plano Contratado')}" if linhas.get("Plano Contratado") else "Nao informado"
 
     try:
         ficha = Ficha(
@@ -62,7 +64,8 @@ def monta_ficha(
             company=f"{empresa} - {razao_social}",
             store=f"{loja} - {nome_fantasia}",
             token=" | ".join(tokens),
-            servico_cartao=servico_cartao,
+            servico_cartao=f"{servico_cartao} {numero_cliente}",
+            plano=plano_contratado
         )
         return ficha
     except ValidationError as e:

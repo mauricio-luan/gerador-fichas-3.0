@@ -1,18 +1,10 @@
 import os
 from pathlib import Path
-from config.define_path import define_path
+from config.dev_or_prod import is_development
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from openpyxl.drawing.image import Image
 from schemas.ficha import Ficha
-
-
-def get_image_path() -> Path:
-    caminho_imagem = define_path("assets/payer.png")
-    if not caminho_imagem.exists():
-        raise FileNotFoundError("Arquivo de imagem não encontrado.")
-
-    return caminho_imagem
 
 
 def ajustar_altura(ws, linha: int, texto: str, largura_coluna: float):
@@ -29,7 +21,7 @@ def ajustar_altura(ws, linha: int, texto: str, largura_coluna: float):
 def gera_planilha(dados: Ficha) -> Workbook:
     wb = Workbook()
     ws = wb.active
-    ws.title = "Sitef"
+    ws.title = "Ficha de implantacao"
 
     fonte_negrito = Font(bold=True)
     fonte_branca = Font(color="FFFFFF", bold=True)
@@ -62,11 +54,6 @@ def gera_planilha(dados: Ficha) -> Workbook:
     ws["A1"].fill = preenchimento_cabecalho
     ws["A1"].border = borda_fina
 
-    img = Image(get_image_path())
-    img.width = 120
-    img.height = 19
-    ws.add_image(img, "A1")
-
     ws["B1"].value = "FICHA DE IMPLANTAÇÃO"
     ws["B1"].font = fonte_branca
     ws["B1"].alignment = alinhamento_central
@@ -88,7 +75,6 @@ def gera_planilha(dados: Ficha) -> Workbook:
         ws[f"A{linha_atual}"].font = fonte_cinza_claro
         ws[f"A{linha_atual}"].border = borda_fina
         ws[f"A{linha_atual}"].alignment = alinhamento_central
-
         ws[f"B{linha_atual}"].value = valor
         ws[f"B{linha_atual}"].border = borda_fina
         ws[f"B{linha_atual}"].alignment = alinhamento_esquerda
@@ -96,7 +82,7 @@ def gera_planilha(dados: Ficha) -> Workbook:
         if isinstance(valor, str):
             ajustar_altura(ws, linha_atual, valor, ws.column_dimensions["B"].width)
 
-        if linha_atual in range(13, 18):
+        if linha_atual in range(13, 20):
             ws[f"B{linha_atual}"].alignment = alinhamento_central
             ws.column_dimensions["B"].width = 48
 
@@ -106,23 +92,26 @@ def gera_planilha(dados: Ficha) -> Workbook:
 
 
 def save(workbook: Workbook, ficha: Ficha) -> None:
-    base_path = Path(r"G:\Drives compartilhados\FICHAS DE IMPLANTACAO")
     letra = ficha.razao_social[0]
     nome_arquivo = f"{ficha.store}.xlsx"
 
-    if not base_path.exists():
-        base_path = Path.home() / "Documents"
-        workbook.save(base_path / nome_arquivo)
-        print(f"\nArquivo {nome_arquivo} salvo em ~/Documentos.\n")
-        os.startfile(base_path)
-
+    if is_development():
+        filename = Path.cwd() / "output" / nome_arquivo
+        workbook.save(filename)
+        print(f"\nArquivo {nome_arquivo} salvo em {filename}.\n")
     else:
-        pasta_letra = base_path / letra
-        pasta_letra.mkdir(exist_ok=True)
+        base_path = Path(r"G:\Drives compartilhados\FICHAS DE IMPLANTACAO")
 
-        pasta_razao_social = pasta_letra / ficha.razao_social
-        pasta_razao_social.mkdir(exist_ok=True)
-
-        workbook.save(pasta_razao_social / nome_arquivo)
-        print(f"Arquivo salvo em: {pasta_razao_social / nome_arquivo}")
-        os.startfile(pasta_razao_social)
+        if not base_path.exists():
+            base_path = Path.home() / "Documents"
+            workbook.save(base_path / nome_arquivo)
+            print(f"\nArquivo {nome_arquivo} salvo em ~/Documentos.\n")
+            os.startfile(base_path)
+        else:
+            pasta_letra = base_path / letra
+            pasta_letra.mkdir(exist_ok=True)
+            pasta_razao_social = pasta_letra / ficha.razao_social
+            pasta_razao_social.mkdir(exist_ok=True)
+            workbook.save(pasta_razao_social / nome_arquivo)
+            print(f"Arquivo salvo em: {pasta_razao_social / nome_arquivo}")
+            os.startfile(pasta_razao_social)
