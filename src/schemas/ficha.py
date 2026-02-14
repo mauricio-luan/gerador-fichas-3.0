@@ -18,3 +18,4 @@ class Ficha(BaseModel):
     store: str
     token: str
     servico_cartao: Optional[str] = None
+    plano: str

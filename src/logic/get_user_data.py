@@ -44,3 +44,12 @@ def get_servico_cartao() -> str:
         )
 
     return servico_selecionado
+
+def get_numero_cliente_sitef(servico_cartao: str) -> str:
+    if (servico_cartao not in ["SC2", "SC4"]):
+        return ""
+    
+    id_sitef = input("Numero cliente Sitef (opcional): ").strip()
+    if id_sitef and len(id_sitef) < 7:
+        raise ValueError("Número cliente Sitef deve conter pelo menos 7 caracteres.\n")
+    return id_sitef

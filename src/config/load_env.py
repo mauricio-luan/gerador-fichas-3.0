@@ -2,18 +2,15 @@ import os
 import sys
 from pathlib import Path
 from dotenv import load_dotenv
-
+from config.dev_or_prod import is_development
 
 def load_env():
-    if getattr(sys, "frozen", False):
-        app_path = Path(sys.executable).parent
-        # print(f"exe: {app_path}") <-- debug mauricio
-    else:
+    if is_development():
         app_path = Path(__file__).parent.parent.parent
-        # print(f"dev: {app_path}") <-- debug mauricio
-
+    else:
+        app_path = Path(sys.executable).parent
+        
     env_path = app_path / ".env"
-
     if env_path.exists():
         load_dotenv(dotenv_path=env_path)
 
