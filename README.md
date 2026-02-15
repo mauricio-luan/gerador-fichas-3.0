@@ -6,13 +6,11 @@ Este projeto automatiza a criação de fichas de implantação em Excel, extrain
 
 ## Motivação
 
-Como Analista de Suporte, uma das responsabilidades da minha equipe é a criação manual das fichas de implantação para cada novo cliente. O processo original consistia em:
+Como Analista de Suporte, uma das responsabilidades da minha equipe era a criação manual das fichas de implantação para cada novo cliente. O processo original consistia em:
 
 1. Acessar o sistema TomTicket.
 2. Copiar diversas informações do cliente e do chamado.
 3. Colar e formatar os dados em uma planilha modelo.
-
-Embora funcional para uma baixa demanda, este processo manual se tornava lento e suscetível a erros quando o fluxo de novos clientes aumentava.
 
 Este projeto nasceu da necessidade de otimizar essa tarefa. A solução utiliza a API do TomTicket para automatizar completamente o fluxo, desde a coleta dos dados até a geração e o salvamento da planilha final, estilizada e pronta para uso.
 
@@ -21,8 +19,6 @@ Este projeto nasceu da necessidade de otimizar essa tarefa. A solução utiliza 
 - Redução drástica do tempo gasto por ficha.
 - Eliminação de erros de cópia e colagem manual.
 - Padronização garantida de todas as fichas geradas.
-
-Além de resolver um problema prático da área, este projeto foi uma excelente oportunidade para aprofundar meus conhecimentos em desenvolvimento, especialmente em consumo de APIs REST, manipulação de dados e automação de tarefas.
 
 ## Como usar
 
