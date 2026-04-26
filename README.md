@@ -50,5 +50,3 @@ API_TOKEN=seu_token_aqui
 2. Vá em Configurações > API
 3. Gere um novo token de acesso
 4. Copie o token para o arquivo `.env`
-
-**Mauricio Luan** - 2025
